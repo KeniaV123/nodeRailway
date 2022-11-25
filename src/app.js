@@ -21,7 +21,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/usuarios", async (req, res) => {
-  const [result] = await pool.query("select * from usuario");
+  const [result] = await pool.query("select * from usuarioFly");
 
   res.json(result);
 });
@@ -33,13 +33,24 @@ app.get("/agregarusuario", async (req, res) => {
 
   const correo = req.query.correo;
 
-  const tienda = req.query.tienda;
-
   const [result] = await pool.query(
-    `INSERT INTO usuario (nombre, contrasena, correo, tienda) VALUES ('${nombre}', '${contrasena}', '${correo}','${tienda}')`
+    `INSERT INTO usuarioFly (nombre, contrasena, correo) VALUES ('${nombre}', '${contrasena}', '${correo}')`
   );
 
   res.json(result[0]);
+});
+
+app.get("/login", async (req, res) => {
+  const nombre = req.query.nombre;
+  const contrasena = req.query.contrasena;
+  const [result] = await pool.query(
+    `SELECT * FROM usuarioFly WHERE nombre = '${nombre}' AND contrasena = '${contrasena}'`
+  );
+  if (result.length > 0) {
+    res.json({ status: "ok" });
+  } else {
+    res.json({ status: "error" });
+  }
 });
 
 app.listen(process.env.PORT || 3000);
